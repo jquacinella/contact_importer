@@ -71,8 +71,6 @@ class LiveContactImporter(BaseProvider):
 
         for contact in contacts_list['data']:
 
-            import pdb; pdb.set_trace()
-
             email = first = last = None
 
             emails = contact['emails']
