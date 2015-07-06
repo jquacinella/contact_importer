@@ -67,14 +67,30 @@ class LiveContactImporter(BaseProvider):
 
     def parse_contacts(self, contacts_json):
         contacts_list = json.loads(contacts_json)
-        contacts = []
+        contacts = { }
+
         for contact in contacts_list['data']:
+
+            import pdb; pdb.set_trace()
+
+            email = first = last = None
+
             emails = contact['emails']
             if emails.get(self.field):
-                contacts.append(emails[self.field])
+                email = emails[self.field]
             # Refer to https://github.com/mengu/contact_importer/pull/2
             elif emails.get(DEFAULT_FIELD):
-                contacts.append(emails[DEFAULT_FIELD])
+                email = emails[DEFAULT_FIELD]
+
+            if contact.get('first_name'):
+                first = contact.get('first_name')
+
+            if contact.get('last_name'):
+                last = contact.get('last_name') 
+
+            if email:
+                contacts[email] = {'email': email, 'first': first, 'last': last}
+        
         return contacts
 
 
