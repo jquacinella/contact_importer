@@ -58,12 +58,25 @@ class GoogleContactImporter(BaseProvider):
         parser = etree.XMLParser(ns_clean=True, recover=True, encoding="utf-8")
         root = etree.fromstring(contacts_xml.encode("utf-8"), parser)
         elms = root.findall("{http://www.w3.org/2005/Atom}entry")
-        contacts = []
+        
+        contacts = {}
         
         for elm in elms:
+            contact = {}
+
             children = elm.getchildren()
+            email = first = last = None
             for child in children:
                 if child.tag == "{http://schemas.google.com/g/2005}email":
-                    contacts.append(child.attrib.get('address'))
-
+                    email = child.attrib.get('address')
+                elif child.tag == "{http://schemas.google.com/g/2005}name":
+                    nameChildren = child.getchildren()
+                    for nameChild in nameChildren:
+                        if nameChild.tag == "{http://schemas.google.com/g/2005}givenName":
+                            first = nameChild.text
+                        elif nameChild.tag == "{http://schemas.google.com/g/2005}familyName":
+                            last = nameChild.text
+            
+            if email:
+                contacts[email] = {'email': email, 'first': first, 'last': last}
         return contacts

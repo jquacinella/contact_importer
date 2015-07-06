@@ -98,20 +98,24 @@ class YahooContactImporter(BaseProvider):
         return self.parse_contacts(response.text)
 
     def parse_contacts(self, contacts_json):
-        contacts = json.loads(contacts_json)
-        contacts_list = set([])
+        contacts_json = json.loads(contacts_json)
+        contacts = { }
 
-        for contact in contacts['contacts']['contact']:
+        for contact in contacts_json['contacts']['contact']:
+            email = first = last = None
             for field in contact['fields']:
                 contact_type = field['type']
                 contact_value = field['value']
 
                 if contact_type == "yahooid" and not "@" in contact_value:
-                    contact_value += "@yahoo.com"
-                    contacts_list.add(contact_value)
+                    email = contact_value + "@yahoo.com"
                 elif contact_type == "email":
-                    contacts_list.add(contact_value)
+                    email = contact_value
+                elif contact_type == "name":
+                    first = contact_value['givenName']
+                    last = contact_value['familyName']
 
-        return contacts_list
+            if email:
+                contacts[email] = {'email': email, 'first': first, 'last': last}
 
-
+        return contacts
