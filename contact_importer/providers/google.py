@@ -78,5 +78,5 @@ class GoogleContactImporter(BaseProvider):
                             last = nameChild.text
             
             if email:
-                contacts[email] = {'email': email, 'first': first, 'last': last}
+                contacts[email] = {'email': email, 'first_name': first, 'last_name': last}
         return contacts

@@ -87,7 +87,7 @@ class LiveContactImporter(BaseProvider):
                 last = contact.get('last_name') 
 
             if email:
-                contacts[email] = {'email': email, 'first': first, 'last': last}
+                contacts[email] = {'email': email, 'first_name': first, 'last_name': last}
         
         return contacts
 
