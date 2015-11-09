@@ -101,21 +101,23 @@ class YahooContactImporter(BaseProvider):
         contacts_json = json.loads(contacts_json)
         contacts = { }
 
-        for contact in contacts_json['contacts']['contact']:
-            email = first = last = None
-            for field in contact['fields']:
-                contact_type = field['type']
-                contact_value = field['value']
+        # Need to do this check, since we have seen in the wild no 'contact' field in contacts
+        if 'contacts' in contacts_json and 'contact' in contacts_json['contacts']:
+            for contact in contacts_json['contacts']['contact']:
+                email = first = last = None
+                for field in contact['fields']:
+                    contact_type = field['type']
+                    contact_value = field['value']
 
-                if contact_type == "yahooid" and not "@" in contact_value:
-                    email = contact_value + "@yahoo.com"
-                elif contact_type == "email":
-                    email = contact_value
-                elif contact_type == "name":
-                    first = contact_value['givenName']
-                    last = contact_value['familyName']
+                    if contact_type == "yahooid" and not "@" in contact_value:
+                        email = contact_value + "@yahoo.com"
+                    elif contact_type == "email":
+                        email = contact_value
+                    elif contact_type == "name":
+                        first = contact_value['givenName']
+                        last = contact_value['familyName']
 
-            if email:
-                contacts[email] = {'email': email, 'first_name': first, 'last_name': last}
+                if email:
+                    contacts[email] = {'email': email, 'first_name': first, 'last_name': last}
 
         return contacts
